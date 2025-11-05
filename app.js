@@ -112,12 +112,20 @@ function setupEventListeners() {
     elements.saveBtn.addEventListener('click', saveImage);
 }
 
+// シンプルなルームID生成（6桁の数字）
+function generateSimpleRoomId() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 // PeerJS初期化
 function initPeer() {
     updateStatus('connecting', '接続中...');
 
+    // シンプルな6桁のIDを生成
+    const customId = 'room-' + generateSimpleRoomId();
+
     try {
-        peer = new Peer({
+        peer = new Peer(customId, {
             host: '0.peerjs.com',
             port: 443,
             path: '/',
@@ -188,22 +196,25 @@ function createRoom() {
     isHost = true;
     roomId = myPeerId;
 
-    console.log('✅ ルーム作成成功 - Room ID:', roomId);
+    // 表示用のシンプルなID（数字のみ）
+    const displayId = roomId.replace('room-', '');
 
-    // 接続パネルのルームID表示
-    elements.roomIdText.textContent = roomId;
+    console.log('✅ ルーム作成成功 - Room ID:', roomId, '表示ID:', displayId);
+
+    // 接続パネルのルームID表示（数字のみ）
+    elements.roomIdText.textContent = displayId;
     elements.roomIdDisplay.style.display = 'block';
     elements.createRoomBtn.disabled = true;
 
-    // キャンバス画面のルームID表示
-    elements.canvasRoomId.textContent = roomId;
+    // キャンバス画面のルームID表示（数字のみ）
+    elements.canvasRoomId.textContent = displayId;
 
     showCanvas();
 }
 
 // ルーム参加
 function joinRoom() {
-    const inputRoomId = elements.joinRoomInput.value.trim();
+    let inputRoomId = elements.joinRoomInput.value.trim();
 
     console.log('🚪 joinRoom呼び出し - inputRoomId:', inputRoomId);
 
@@ -218,14 +229,24 @@ function joinRoom() {
         return;
     }
 
-    roomId = inputRoomId;
+    // 数字のみの入力の場合、プレフィックスを追加
+    if (/^\d{6}$/.test(inputRoomId)) {
+        roomId = 'room-' + inputRoomId;
+    } else if (inputRoomId.startsWith('room-')) {
+        roomId = inputRoomId;
+    } else {
+        alert('6桁の数字を入力してください。');
+        return;
+    }
+
     console.log('🔌 ルームに接続を試みます:', roomId);
     const conn = peer.connect(roomId);
 
     conn.on('open', () => {
         console.log('✅ ルームに接続成功:', roomId);
-        // キャンバス画面のルームID表示
-        elements.canvasRoomId.textContent = roomId;
+        // キャンバス画面のルームID表示（数字のみ）
+        const displayId = roomId.replace('room-', '');
+        elements.canvasRoomId.textContent = displayId;
         setupConnection(conn);
         showCanvas();
     });
@@ -465,12 +486,21 @@ function showCanvas() {
 }
 
 function copyRoomId() {
-    navigator.clipboard.writeText(roomId).then(() => {
-        const originalText = elements.copyRoomIdBtn.textContent;
-        elements.copyRoomIdBtn.textContent = '✓ コピーしました！';
+    // 数字のみをコピー
+    const displayId = roomId.replace('room-', '');
+
+    navigator.clipboard.writeText(displayId).then(() => {
+        // コピー元のボタンを判定
+        const btn = event.target;
+        const originalText = btn.textContent;
+
+        btn.textContent = '✓ コピー完了';
         setTimeout(() => {
-            elements.copyRoomIdBtn.textContent = originalText;
+            btn.textContent = originalText;
         }, 2000);
+    }).catch(err => {
+        console.error('コピー失敗:', err);
+        alert('コピーに失敗しました。手動でコピーしてください: ' + displayId);
     });
 }
 
