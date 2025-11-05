@@ -10,6 +10,8 @@ let canvas, ctx;
 let isDrawing = false;
 let currentColor = '#000000';
 let currentBrushSize = 5;
+let lastX = 0;
+let lastY = 0;
 
 // UI要素
 const elements = {
@@ -53,14 +55,23 @@ function resizeCanvas() {
     const container = canvas.parentElement;
     const rect = container.getBoundingClientRect();
 
+    // サイズが0の場合はスキップ
+    if (rect.width === 0 || rect.height === 0) {
+        return;
+    }
+
     // 既存の描画内容を保存
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const imageData = canvas.width > 0 && canvas.height > 0
+        ? ctx.getImageData(0, 0, canvas.width, canvas.height)
+        : null;
 
     canvas.width = rect.width;
     canvas.height = rect.height - 60; // ツールバーの高さを引く
 
     // 描画内容を復元
-    ctx.putImageData(imageData, 0, 0);
+    if (imageData) {
+        ctx.putImageData(imageData, 0, 0);
+    }
 }
 
 function setupEventListeners() {
@@ -222,8 +233,8 @@ function handleReceivedData(data) {
 function startDrawing(e) {
     isDrawing = true;
     const pos = getMousePos(e);
-    ctx.beginPath();
-    ctx.moveTo(pos.x, pos.y);
+    lastX = pos.x;
+    lastY = pos.y;
 }
 
 function draw(e) {
@@ -239,8 +250,10 @@ function draw(e) {
     if (!isDrawing) return;
 
     const drawData = {
-        x: pos.x,
-        y: pos.y,
+        x0: lastX,
+        y0: lastY,
+        x1: pos.x,
+        y1: pos.y,
         color: currentColor,
         size: currentBrushSize
     };
@@ -250,35 +263,39 @@ function draw(e) {
         type: 'draw',
         data: drawData
     });
+
+    lastX = pos.x;
+    lastY = pos.y;
 }
 
 function stopDrawing() {
     if (isDrawing) {
         isDrawing = false;
-        ctx.closePath();
     }
 }
 
 function drawLine(data) {
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(data.x0, data.y0);
+    ctx.lineTo(data.x1, data.y1);
     ctx.strokeStyle = data.color;
     ctx.lineWidth = data.size;
-    ctx.lineTo(data.x, data.y);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
     ctx.stroke();
+    ctx.closePath();
 }
 
 function drawRemoteLine(data) {
-    const prevStrokeStyle = ctx.strokeStyle;
-    const prevLineWidth = ctx.lineWidth;
-
+    ctx.beginPath();
+    ctx.moveTo(data.x0, data.y0);
+    ctx.lineTo(data.x1, data.y1);
     ctx.strokeStyle = data.color;
     ctx.lineWidth = data.size;
-    ctx.lineTo(data.x, data.y);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
     ctx.stroke();
-
-    ctx.strokeStyle = prevStrokeStyle;
-    ctx.lineWidth = prevLineWidth;
+    ctx.closePath();
 }
 
 function getMousePos(e) {
