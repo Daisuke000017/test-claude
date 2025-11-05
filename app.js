@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', init);
 function init() {
     // Canvas初期化
     canvas = document.getElementById('canvas');
-    ctx = canvas.getContext('2d');
+    ctx = canvas.getContext('2d', { willReadFrequently: true });
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
