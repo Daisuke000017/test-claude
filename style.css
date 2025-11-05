@@ -1,0 +1,362 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1400px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    color: #333;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    background: #f5f5f5;
+    border-radius: 20px;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ccc;
+    animation: pulse 2s infinite;
+}
+
+.connection-status.connected .status-indicator {
+    background: #4caf50;
+}
+
+.connection-status.connecting .status-indicator {
+    background: #ff9800;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.status-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+}
+
+.main-content {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+/* 接続パネル */
+.connection-panel {
+    padding: 60px 40px;
+}
+
+.panel-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.panel-content h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 40px;
+    font-size: 32px;
+}
+
+.connection-options {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.option {
+    text-align: center;
+}
+
+.option h3 {
+    color: #555;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.divider {
+    text-align: center;
+    color: #999;
+    font-weight: 500;
+    position: relative;
+    margin: 10px 0;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #ddd;
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 15px 30px;
+    transition: all 0.3s;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 100%;
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.secondary-btn {
+    background: #4caf50;
+    color: white;
+    width: 100%;
+}
+
+.secondary-btn:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+}
+
+.room-id-display {
+    margin-top: 25px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 2px dashed #667eea;
+}
+
+.room-id-display p {
+    color: #555;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.room-id-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.room-id-container code {
+    flex: 1;
+    padding: 12px 16px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #667eea;
+    letter-spacing: 2px;
+}
+
+.copy-btn {
+    padding: 10px 16px;
+    background: #667eea;
+    color: white;
+    font-size: 14px;
+}
+
+.copy-btn:hover {
+    background: #5568d3;
+}
+
+.help-text {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #777;
+}
+
+/* キャンバスエリア */
+.canvas-container {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    position: relative;
+}
+
+.toolbar {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-bottom: 2px solid #e0e0e0;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.tool-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tool-group label {
+    font-weight: 500;
+    color: #555;
+    font-size: 14px;
+}
+
+input[type="color"] {
+    width: 50px;
+    height: 35px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+input[type="range"] {
+    width: 120px;
+}
+
+.tool-btn {
+    padding: 8px 16px;
+    background: #667eea;
+    color: white;
+    font-size: 14px;
+}
+
+.tool-btn:hover {
+    background: #5568d3;
+}
+
+.tool-btn.danger {
+    background: #f44336;
+}
+
+.tool-btn.danger:hover {
+    background: #da190b;
+}
+
+.participants {
+    margin-left: auto;
+    font-weight: 500;
+    color: #555;
+}
+
+#canvas {
+    flex: 1;
+    background: white;
+    cursor: crosshair;
+    display: block;
+}
+
+/* カーソル表示 */
+.cursors {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.remote-cursor {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    transition: all 0.05s linear;
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    .toolbar {
+        gap: 10px;
+    }
+
+    .tool-group {
+        flex-wrap: wrap;
+    }
+
+    .participants {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .connection-panel {
+        padding: 30px 20px;
+    }
+}

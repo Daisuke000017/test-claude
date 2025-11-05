@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 共同お絵かきアプリ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 リアルタイム共同お絵かき</h1>
+            <div class="connection-status" id="status">
+                <span class="status-indicator"></span>
+                <span class="status-text">オフライン</span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- 接続パネル -->
+            <div class="connection-panel" id="connectionPanel">
+                <div class="panel-content">
+                    <h2>ルームに参加</h2>
+                    <div class="connection-options">
+                        <div class="option">
+                            <h3>新しいルームを作成</h3>
+                            <button id="createRoomBtn" class="primary-btn">ルームを作成</button>
+                            <div id="roomIdDisplay" class="room-id-display" style="display: none;">
+                                <p>ルームID:</p>
+                                <div class="room-id-container">
+                                    <code id="roomIdText"></code>
+                                    <button id="copyRoomIdBtn" class="copy-btn">📋 コピー</button>
+                                </div>
+                                <p class="help-text">このIDを共有して、他の人を招待しましょう！</p>
+                            </div>
+                        </div>
+                        <div class="divider">または</div>
+                        <div class="option">
+                            <h3>既存のルームに参加</h3>
+                            <input type="text" id="joinRoomInput" placeholder="ルームIDを入力" />
+                            <button id="joinRoomBtn" class="secondary-btn">参加する</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- お絵かきエリア -->
+            <div class="canvas-container" id="canvasContainer" style="display: none;">
+                <div class="toolbar">
+                    <div class="tool-group">
+                        <label>色:</label>
+                        <input type="color" id="colorPicker" value="#000000">
+                    </div>
+                    <div class="tool-group">
+                        <label>太さ: <span id="brushSizeLabel">5</span>px</label>
+                        <input type="range" id="brushSize" min="1" max="50" value="5">
+                    </div>
+                    <div class="tool-group">
+                        <button id="clearBtn" class="tool-btn">🗑️ クリア</button>
+                        <button id="saveBtn" class="tool-btn">💾 保存</button>
+                        <button id="leaveRoomBtn" class="tool-btn danger">🚪 退室</button>
+                    </div>
+                    <div class="participants">
+                        <span>👥 参加者: <span id="participantCount">1</span></span>
+                    </div>
+                </div>
+                <canvas id="canvas"></canvas>
+                <div class="cursors" id="cursors"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

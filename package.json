@@ -1,0 +1,19 @@
+{
+  "name": "collaborative-drawing-app",
+  "version": "1.0.0",
+  "description": "Real-time collaborative drawing app using WebRTC (PeerJS)",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "start": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "drawing",
+    "collaborative",
+    "webrtc",
+    "peerjs",
+    "canvas"
+  ],
+  "author": "",
+  "license": "MIT"
+}
