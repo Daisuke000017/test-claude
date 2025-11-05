@@ -296,8 +296,50 @@ input[type="range"] {
     background: #da190b;
 }
 
-.participants {
+.room-info {
     margin-left: auto;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.room-id-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: #f0f4ff;
+    border: 1px solid #667eea;
+    border-radius: 8px;
+}
+
+.room-id-badge code {
+    font-size: 12px;
+    font-weight: 600;
+    color: #667eea;
+    letter-spacing: 0.5px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.copy-btn-small {
+    padding: 4px 8px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.3s;
+}
+
+.copy-btn-small:hover {
+    background: #5568d3;
+}
+
+.participants {
     font-weight: 500;
     color: #555;
 }
@@ -349,6 +391,18 @@ input[type="range"] {
 
     .tool-group {
         flex-wrap: wrap;
+    }
+
+    .room-info {
+        margin-left: 0;
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .room-id-badge code {
+        max-width: 150px;
+        font-size: 10px;
     }
 
     .participants {

@@ -60,8 +60,14 @@
                         <button id="saveBtn" class="tool-btn">💾 保存</button>
                         <button id="leaveRoomBtn" class="tool-btn danger">🚪 退室</button>
                     </div>
-                    <div class="participants">
-                        <span>👥 参加者: <span id="participantCount">1</span></span>
+                    <div class="room-info">
+                        <div class="room-id-badge">
+                            <span>🔗 ルームID: <code id="canvasRoomId"></code></span>
+                            <button id="copyRoomIdBtn2" class="copy-btn-small" title="ルームIDをコピー">📋</button>
+                        </div>
+                        <div class="participants">
+                            <span>👥 参加者: <span id="participantCount">1</span></span>
+                        </div>
                     </div>
                 </div>
                 <canvas id="canvas"></canvas>

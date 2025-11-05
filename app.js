@@ -24,6 +24,8 @@ const elements = {
     roomIdDisplay: document.getElementById('roomIdDisplay'),
     roomIdText: document.getElementById('roomIdText'),
     copyRoomIdBtn: document.getElementById('copyRoomIdBtn'),
+    canvasRoomId: document.getElementById('canvasRoomId'),
+    copyRoomIdBtn2: document.getElementById('copyRoomIdBtn2'),
     colorPicker: document.getElementById('colorPicker'),
     brushSize: document.getElementById('brushSize'),
     brushSizeLabel: document.getElementById('brushSizeLabel'),
@@ -82,6 +84,7 @@ function setupEventListeners() {
         if (e.key === 'Enter') joinRoom();
     });
     elements.copyRoomIdBtn.addEventListener('click', copyRoomId);
+    elements.copyRoomIdBtn2.addEventListener('click', copyRoomId);
     elements.leaveRoomBtn.addEventListener('click', leaveRoom);
 
     // お絵かき機能
@@ -187,9 +190,13 @@ function createRoom() {
 
     console.log('✅ ルーム作成成功 - Room ID:', roomId);
 
+    // 接続パネルのルームID表示
     elements.roomIdText.textContent = roomId;
     elements.roomIdDisplay.style.display = 'block';
     elements.createRoomBtn.disabled = true;
+
+    // キャンバス画面のルームID表示
+    elements.canvasRoomId.textContent = roomId;
 
     showCanvas();
 }
@@ -217,6 +224,8 @@ function joinRoom() {
 
     conn.on('open', () => {
         console.log('✅ ルームに接続成功:', roomId);
+        // キャンバス画面のルームID表示
+        elements.canvasRoomId.textContent = roomId;
         setupConnection(conn);
         showCanvas();
     });
