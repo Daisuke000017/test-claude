@@ -113,41 +113,79 @@ function setupEventListeners() {
 function initPeer() {
     updateStatus('connecting', '接続中...');
 
-    peer = new Peer({
-        config: {
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
-            ]
-        }
-    });
+    try {
+        peer = new Peer({
+            host: '0.peerjs.com',
+            port: 443,
+            path: '/',
+            secure: true,
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' }
+                ]
+            },
+            debug: 2
+        });
 
-    peer.on('open', (id) => {
-        myPeerId = id;
-        updateStatus('connected', 'オンライン');
-        console.log('My peer ID:', id);
-    });
+        peer.on('open', (id) => {
+            myPeerId = id;
+            updateStatus('connected', 'オンライン');
+            console.log('✅ PeerJS接続成功 - My peer ID:', id);
+        });
 
-    peer.on('connection', (conn) => {
-        setupConnection(conn);
-    });
+        peer.on('connection', (conn) => {
+            console.log('新しい接続を受信:', conn.peer);
+            setupConnection(conn);
+        });
 
-    peer.on('error', (err) => {
-        console.error('Peer error:', err);
-        updateStatus('offline', 'エラー発生');
-        alert('接続エラー: ' + err.message);
-    });
+        peer.on('error', (err) => {
+            console.error('❌ Peer error:', err);
+            updateStatus('offline', 'エラー発生: ' + err.type);
+
+            // エラーの詳細を表示
+            if (err.type === 'unavailable-id') {
+                alert('このIDは既に使用されています。ページを再読み込みしてください。');
+            } else if (err.type === 'network') {
+                alert('ネットワークエラー。インターネット接続を確認してください。');
+            } else if (err.type === 'server-error') {
+                alert('サーバーエラー。しばらく待ってから再試行してください。');
+            } else {
+                alert('接続エラー: ' + err.message);
+            }
+        });
+
+        peer.on('disconnected', () => {
+            console.log('⚠️ PeerJS切断 - 再接続を試みます...');
+            updateStatus('connecting', '再接続中...');
+            peer.reconnect();
+        });
+    } catch (err) {
+        console.error('❌ PeerJS初期化エラー:', err);
+        alert('PeerJSの初期化に失敗しました: ' + err.message);
+    }
 }
 
 // ルーム作成
 function createRoom() {
-    if (!peer || !myPeerId) {
-        alert('接続を確立中です。少々お待ちください。');
+    console.log('🎨 createRoom呼び出し - peer:', peer, 'myPeerId:', myPeerId);
+
+    if (!peer) {
+        console.error('❌ Peerオブジェクトが存在しません');
+        alert('接続の初期化に失敗しました。ページを再読み込みしてください。');
+        return;
+    }
+
+    if (!myPeerId) {
+        console.warn('⚠️ まだPeer IDが取得されていません');
+        alert('接続を確立中です。少々お待ちください。\n\n画面右上の接続状態が「オンライン」になってから再度お試しください。');
         return;
     }
 
     isHost = true;
     roomId = myPeerId;
+
+    console.log('✅ ルーム作成成功 - Room ID:', roomId);
 
     elements.roomIdText.textContent = roomId;
     elements.roomIdDisplay.style.display = 'block';
@@ -160,27 +198,32 @@ function createRoom() {
 function joinRoom() {
     const inputRoomId = elements.joinRoomInput.value.trim();
 
+    console.log('🚪 joinRoom呼び出し - inputRoomId:', inputRoomId);
+
     if (!inputRoomId) {
         alert('ルームIDを入力してください。');
         return;
     }
 
     if (!peer || !myPeerId) {
-        alert('接続を確立中です。少々お待ちください。');
+        console.warn('⚠️ Peer接続が確立されていません');
+        alert('接続を確立中です。少々お待ちください。\n\n画面右上の接続状態が「オンライン」になってから再度お試しください。');
         return;
     }
 
     roomId = inputRoomId;
+    console.log('🔌 ルームに接続を試みます:', roomId);
     const conn = peer.connect(roomId);
 
     conn.on('open', () => {
+        console.log('✅ ルームに接続成功:', roomId);
         setupConnection(conn);
         showCanvas();
     });
 
     conn.on('error', (err) => {
-        console.error('Connection error:', err);
-        alert('ルームへの接続に失敗しました。ルームIDを確認してください。');
+        console.error('❌ 接続エラー:', err);
+        alert('ルームへの接続に失敗しました。ルームIDを確認してください。\n\nエラー: ' + err.type);
     });
 }
 
