@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Poll {
+  id              String     @id @default(cuid())
+  title           String
+  description     String?
+  isAnonymous     Boolean    @default(true)
+  allowMultiple   Boolean    @default(false)
+  maxChoices      Int?
+
+  hostCode        String     @unique
+  participantCode String     @unique
+
+  status          PollStatus @default(DRAFT)
+
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  startedAt       DateTime?
+  closedAt        DateTime?
+
+  questions       Question[]
+  sessions        Session[]
+
+  @@index([hostCode])
+  @@index([participantCode])
+}
+
+model Question {
+  id           String       @id @default(cuid())
+  pollId       String
+  poll         Poll         @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
+  title        String
+  description  String?
+  questionType QuestionType @default(MULTIPLE_CHOICE)
+  order        Int
+
+  options      Option[]
+  responses    Response[]
+
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([pollId])
+}
+
+model Option {
+  id         String     @id @default(cuid())
+  questionId String
+  question   Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  text       String
+  order      Int
+
+  responses  Response[]
+
+  @@index([questionId])
+}
+
+model Response {
+  id         String   @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  optionId   String?
+  option     Option?  @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  textAnswer String?
+  sessionId  String
+  session    Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+
+  @@index([questionId])
+  @@index([sessionId])
+}
+
+model Session {
+  id          String     @id @default(cuid())
+  pollId      String
+  poll        Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
+  fingerprint String
+
+  responses   Response[]
+
+  joinedAt    DateTime   @default(now())
+
+  @@index([pollId])
+  @@unique([pollId, fingerprint])
+}
+
+enum PollStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  CLOSED
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TEXT
+  RATING
+  YES_NO
+}
